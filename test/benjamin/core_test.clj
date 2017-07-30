@@ -10,24 +10,20 @@
 (defn my-fixture [f]
   (reset! user clean-slate)
   (let [unique? #(some? %)
-            today? #(if-let [date (first (vals %))]
-                      (time/today? date)
-                      false)
-            last-3-days? #(if-let [date (first (vals %))]
-                            (time/last-days? date 3)
-                            false)
-            last-3-months? #(if-let [date (first (vals %))]
-                              (time/last-months? date 3)
-                              false)]
+        today? #(if-let [date (first (vals %))]
+                  (time/today? date)
+                  false)
+        last-3-days? #(if-let [date (first (vals %))]
+                        (time/last-days? date 3)
+                        false)
+        last-3-months? #(if-let [date (first (vals %))]
+                          (time/last-months? date 3)
+                          false)]
         (set-events! {:on-vacation last-3-months?
                       :account-blocked last-3-months?
-                      :trial-has-ended unique?
                       :end-of-trial unique?
                       :follow-up unique?
-                      :signed-up unique?
                       :categories-change today?
-                      :subscription-reminder today?
-                      :subscription-expired today?
                       :newsletter last-3-days?}))
   (set-persistence-fn! (fn [entity event] (swap! user (fn [entity] (let [logbook (conj (:logbook entity) {event (t/now)})]
                                                                    (assoc entity :logbook logbook))))))
@@ -58,13 +54,9 @@
                               false)]
         (set-events! {:on-vacation last-3-months?
                       :account-blocked last-3-months?
-                      :trial-has-ended unique?
                       :end-of-trial unique?
                       :follow-up unique?
-                      :signed-up unique?
                       :categories-change today?
-                      :subscription-reminder today?
-                      :subscription-expired today?
                       :newsletter last-3-days?}))
       (is (thrown-with-msg? java.util.concurrent.ExecutionException #"Please 'set-success-fn!` with a function of one argument"
                    @(with-logbook @user :follow-up

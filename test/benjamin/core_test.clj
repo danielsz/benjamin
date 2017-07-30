@@ -1,5 +1,5 @@
 (ns benjamin.core-test
-  (:require [benjamin.core :refer [with-logbook set-persistence-fn! set-success-fn! set-events!]]
+  (:require [benjamin.core :refer [with-logbook set-persistence-fn! set-success-fn! set-events! set-allow-undeclared-events!]]
             [clojure.test :refer [testing deftest is use-fixtures with-test test-ns]]
             [detijd.core :as time]
             [clj-time.core :as t]))
@@ -109,16 +109,15 @@
       (is (= nil (with-logbook @user :categories-change
                    (identity "I have done something"))))
       (= 1 (count (filter :categories-change (:logbook @user)))))
-    (testing "If no predicate is associated with the event, we execute the operation and write to logbook"
+    (testing "If no predicate is associated with the event, we execute the operation and write to logbook (default)"
       (is (= "I have done something" @(with-logbook @user :subscribed
                                         (identity "I have done something"))))
       (is (= "I have done something" @(with-logbook @user :subscribed
                                         (identity "I have done something"))))
-      (is (= 2 (count (filter :subscribed (:logbook @user))))))))
-
-;; (defn test-ns-hook []
-;;   (configuration)
-;;   (persistence)
-;;   (predicates))
+      (is (= 2 (count (filter :subscribed (:logbook @user))))))
+    (testing "If no predicate is associated with the event, we don't execute the operation and don't write to the logbook"
+      (set-allow-undeclared-events! false)
+      (is (= nil (with-logbook @user :subscribed
+                   (identity "I have done something")))))))
 
 

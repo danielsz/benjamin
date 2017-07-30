@@ -7,65 +7,96 @@
 (def clean-slate {:name "Benjamin Peirce" :logbook []})
 (def user (atom clean-slate))
 
-(let [unique? #(some? %)
-      today? #(if-let [date (first (vals %))]
-               (time/today? date)
-               false)
-      last-3-days? #(if-let [date (first (vals %))]
-                     (time/last-days? date 3)
-                     false)
-      last-3-months? #(if-let [date (first (vals %))]
-                       (time/last-months? date 3)
-                       false)]
-  (set-events! {:on-vacation last-3-months?
-                :account-blocked last-3-months?
-                :trial-has-ended unique?
-                :end-of-trial unique?
-                :follow-up unique?
-                :signed-up unique?
-                :categories-change today?
-                :subscription-reminder today?
-                :subscription-expired today?
-                :newsletter last-3-days?}))
+(defn my-fixture [f]
+  (reset! user clean-slate)
+  (let [unique? #(some? %)
+            today? #(if-let [date (first (vals %))]
+                      (time/today? date)
+                      false)
+            last-3-days? #(if-let [date (first (vals %))]
+                            (time/last-days? date 3)
+                            false)
+            last-3-months? #(if-let [date (first (vals %))]
+                              (time/last-months? date 3)
+                              false)]
+        (set-events! {:on-vacation last-3-months?
+                      :account-blocked last-3-months?
+                      :trial-has-ended unique?
+                      :end-of-trial unique?
+                      :follow-up unique?
+                      :signed-up unique?
+                      :categories-change today?
+                      :subscription-reminder today?
+                      :subscription-expired today?
+                      :newsletter last-3-days?}))
+  (set-persistence-fn! (fn [entity event] (swap! user (fn [entity] (let [logbook (conj (:logbook entity) {event (t/now)})]
+                                                                   (assoc entity :logbook logbook))))))
+  (set-success-fn! (constantly true))
+  (f))
+
+(use-fixtures :each my-fixture)
 
 (deftest configuration
   (testing "Sanity check"
-    (reset! user clean-slate)
     (is (= (:name @user) "Benjamin Peirce"))
     (is (empty? (:logbook @user)))
-    (testing "Throws error when success-fn is not set"
-      (is (thrown? java.util.concurrent.ExecutionException
-                   @(with-logbook @user :subscribed
-                      (do))))
-      (is (thrown? java.util.concurrent.ExecutionException #"Please 'set-success-fn!` with a function of one argument (result)"
-                   @(with-logbook @user :subscribed
+    (use 'benjamin.core :reload)
+    (testing "Throws error when `events' is not set"
+      (is (thrown-with-msg? java.lang.Exception #"Please set event and predicate map"
+                   (with-logbook @user :subscribed
                       (do)))))
-    (testing "Doesn't throw error when success-fn is set"
-      (set-persistence-fn! (constantly true))
+    (testing "Throws error when `success-fn' is not set"
+      (let [unique? #(some? %)
+            today? #(if-let [date (first (vals %))]
+                      (time/today? date)
+                      false)
+            last-3-days? #(if-let [date (first (vals %))]
+                            (time/last-days? date 3)
+                            false)
+            last-3-months? #(if-let [date (first (vals %))]
+                              (time/last-months? date 3)
+                              false)]
+        (set-events! {:on-vacation last-3-months?
+                      :account-blocked last-3-months?
+                      :trial-has-ended unique?
+                      :end-of-trial unique?
+                      :follow-up unique?
+                      :signed-up unique?
+                      :categories-change today?
+                      :subscription-reminder today?
+                      :subscription-expired today?
+                      :newsletter last-3-days?}))
+      (is (thrown-with-msg? java.util.concurrent.ExecutionException #"Please 'set-success-fn!` with a function of one argument"
+                   @(with-logbook @user :follow-up
+                      (do)))))
+    (testing "Throws error when `persistence-fn' is not set"
       (set-success-fn! (constantly true))
-      (is (future? (with-logbook @user :subscribed
+      (is (thrown-with-msg? java.util.concurrent.ExecutionException #"Please 'set-persistence-fn!` with a function of two arguments"
+                   @(with-logbook @user :follow-up
+                      (do)))))
+    (testing "Doesn't throw error when everything is set"
+      (set-persistence-fn! (constantly true))
+      (is (future? (with-logbook @user :follow-up
                      (do)))))))
 
 (deftest persistence
   (testing "Persistence doesn't occur when success is denied"
-    (reset! user clean-slate)
     (set-persistence-fn! (fn [entity event] (swap! user (fn [entity] (let [logbook (conj (:logbook entity) {event (t/now)})]
                                                                    (assoc entity :logbook logbook))))))
     (set-success-fn! (constantly false))
-    @(with-logbook @user :subscribed
+    @(with-logbook @user :account-blocked
       (do))
     (is (empty? (:logbook @user))))
   (testing "Persistence occurs when success is confirmed"
     (reset! user clean-slate)
     (set-success-fn! (constantly true))
-    @(with-logbook @user :subscribed
+    @(with-logbook @user :account-blocked
       (do))
     (is (contains? @user :logbook))
-    (is (boolean (some :subscribed (:logbook @user))))))
+    (is (boolean (some :account-blocked (:logbook @user))))))
 
 (deftest predicates
   (testing "Predicates determine if operation is done, and if logbook gets written."
-    (reset! user clean-slate)
     (testing "`Unique` predicate means operation can be executed once only."
       (is (= "I have done something" @(with-logbook @user :end-of-trial
                                         (identity "I have done something"))))
@@ -85,9 +116,9 @@
                                         (identity "I have done something"))))
       (is (= 2 (count (filter :subscribed (:logbook @user))))))))
 
-(defn test-ns-hook []
-  (configuration)
-  (persistence)
-  (predicates))
+;; (defn test-ns-hook []
+;;   (configuration)
+;;   (persistence)
+;;   (predicates))
 
-(println benjamin.core/events)
+

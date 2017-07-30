@@ -1,9 +1,9 @@
 (ns benjamin.core)
 
 (def ^:dynamic persistence-fn (fn [_ _] (throw (Exception.  "Please 'set-persistence-fn!` with a function of two arguments (entity and event)"))))  
-(def ^:dynamic success-fn (fn [_] (throw (Exception. "Please 'set-success-fn!` with a function of one argument (result)"))))   
-(def ^:dynamic get-logbook :logbook)
+(def ^:dynamic success-fn (fn [_] (throw (Exception. "Please 'set-success-fn!` with a function of one argument (result of operation)"))))
 (def ^:dynamic events #(throw (Exception. "Please set event and predicate map")))
+(def ^:dynamic get-logbook :logbook)
 
 (defn set-persistence-fn! [f]
   (alter-var-root #'persistence-fn (constantly f)))
@@ -11,6 +11,8 @@
   (alter-var-root #'success-fn (constantly f)))
 (defn set-events! [xs]
   (alter-var-root #'events (constantly xs)))
+(defn set-get-logbook! [f]
+  (alter-var-root #'get-logbook (constantly f)))
 
 (defn validate [entity event]
   (when (fn? events) (events))

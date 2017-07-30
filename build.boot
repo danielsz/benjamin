@@ -20,6 +20,7 @@
   "Profile setup for running tests."
   []
   (set-env! :source-paths #{"test"})
+  (reset! boot.repl/*default-middleware* nil)
   (comp
    (watch)
    (notify :visual true)

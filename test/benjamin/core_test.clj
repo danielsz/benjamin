@@ -1,7 +1,8 @@
 (ns benjamin.core-test
-  (:require [benjamin.core :refer [with-logbook set-config!]]
+  (:require [benjamin.core :refer [with-logbook]]
+            [benjamin.configuration :as config :refer [set-config!]]
+            [benjamin.predicates :refer [unique? today? last-3-days? last-3-months?]]
             [clojure.test :refer [testing deftest is use-fixtures with-test test-ns]]
-            [detijd.core :as time]
             [clj-time.core :as t]))
 
 (def clean-slate {:name "Benjamin Peirce" :logbook []})
@@ -9,21 +10,11 @@
 
 (defn my-fixture [f]
   (reset! user clean-slate)
-  (let [unique? #(some? %)
-        today? #(if-let [date (first (vals %))]
-                  (time/today? date)
-                  false)
-        last-3-days? #(if-let [date (first (vals %))]
-                        (time/last-days? date 3)
-                        false)
-        last-3-months? #(if-let [date (first (vals %))]
-                          (time/last-months? date 3)
-                          false)]
-        (set-config! :events {:account-blocked last-3-months?
-                              :end-of-trial unique?
-                              :follow-up unique?
-                              :categories-change today?
-                              :newsletter last-3-days?}))
+  (set-config! :events {:account-blocked last-3-months?
+                        :end-of-trial unique?
+                        :follow-up unique?
+                        :categories-change today?
+                        :newsletter last-3-days?})
   (set-config! :persistence-fn (fn [entity event] (swap! user (fn [entity] (let [logbook (conj (:logbook entity) {event (t/now)})]
                                                                    (assoc entity :logbook logbook))))))
   (set-config! :success-fn (constantly true))
@@ -35,26 +26,16 @@
   (testing "Sanity check"
     (is (= (:name @user) "Benjamin Peirce"))
     (is (empty? (:logbook @user)))
-    (use 'benjamin.core :reload)
+    (config/reset!)
     (testing "Throws error when `events' is not set"
       (is (thrown-with-msg? java.lang.Exception #"Please set event and predicate map"
                    (with-logbook @user :subscribed
                       (do)))))
-    (let [unique? #(some? %)
-            today? #(if-let [date (first (vals %))]
-                      (time/today? date)
-                      false)
-            last-3-days? #(if-let [date (first (vals %))]
-                            (time/last-days? date 3)
-                            false)
-            last-3-months? #(if-let [date (first (vals %))]
-                              (time/last-months? date 3)
-                              false)]
-        (set-config! :events {:account-blocked last-3-months?
-                              :end-of-trial unique?
-                              :follow-up unique?
-                              :categories-change today?
-                              :newsletter last-3-days?}))
+    (set-config! :events {:account-blocked last-3-months?
+                          :end-of-trial unique?
+                          :follow-up unique?
+                          :categories-change today?
+                          :newsletter last-3-days?})
     (testing "Throws error when `persistence-fn' is not set"
       (is (thrown-with-msg? java.util.concurrent.ExecutionException #"Please run 'set-config! :persistence-fn!` with a function of two arguments"
                    @(with-logbook @user :follow-up

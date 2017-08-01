@@ -4,7 +4,7 @@
 
 Please read the accompanying [[http://danielsz.github.io/2017/07/31/The-Peirce-pattern][blog]] post for the motivation.
 
-#+HTML: <img src="image/benjamin.jpg" width="240" height="240" align="right"/>
+#+HTML: <img src="image/benjamin.jpg" width="340" height="360" align="right"/>
 
 Benjamin gives you a macro that transforms code likes this:
 

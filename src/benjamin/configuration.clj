@@ -1,4 +1,5 @@
-(ns benjamin.configuration)
+(ns benjamin.configuration
+  (:refer-clojure :exclude [reset!]))
 
 (def defaults {:persistence-fn (fn [_ _]
                                  (throw (Exception.  "Please run 'set-config! :persistence-fn!` with a function of two arguments (entity and event)")))

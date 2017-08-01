@@ -1,0 +1,117 @@
+* Benjamin
+
+** Idempotency with side-effects (the Lisp way)
+
+Please read the accompanying [[http://danielsz.github.io/2017/07/31/The-Peirce-pattern][blog]] post for the motivation.
+
+#+HTML: <img src="image/benjamin.jpg" width="240" height="240" align="right"/>
+
+Benjamin gives you a macro that transforms code likes this:
+
+#+BEGIN_SRC clojure 
+(with-logbook entity event
+  body)
+#+END_SRC 
+
+Into this:
+
+#+BEGIN_SRC clojure
+(let [logbook (get-logbook entity)]
+  (when (some pred logbook) ; derived from event
+    (let [response (body)]
+      (when (success? response)
+        (write logbook)))))
+#+END_SRC
+
+** Installation 
+
+#+BEGIN_SRC clojure
+[org.danielsz/benjamin "0.1.0"]
+#+END_SRC
+
+** Usage
+
+In your namespace, require:
+#+BEGIN_SRC clojure
+[benjamin.core :refer [with-logbook set-config!]]
+#+END_SRC
+
+*** Accessing the logbook
+
+#+BEGIN_SRC clojure
+(set-config! :get-logbook f)
+#+END_SRC
+
+~get-logbook~ is a function that receives the entity as argument and returns a logbook. 
+The default is ~:logbook~ which will work when the entity map embeds the logbook, as in:
+
+#+BEGIN_SRC clojure
+{:first-name "Benjamin"
+ :last-name "Peirce"
+ :occupation "Mathematician"
+ :email "benjamin.peirce@harvard.edu"
+ :logbook [{:welcome-email timestamp}
+           {:subscription-reminder timestamp}
+           {:subscription-reminder timestamp}
+           {:newsletter timestamp}
+           {:newsletter timestamp}
+           {:newsletter timestamp}]}
+#+END_SRC
+
+*** Deriving predicates from events
+
+#+BEGIN_SRC clojure
+(set-config! :events {:event predicate
+                      :event predicate
+                      :event predicate
+                      ...})
+#+END_SRC
+
+Predicates are one argument functions that receive a logbook entry. 
+
+The following example checks if the logbook entry was written today.
+
+#+BEGIN_SRC clojure
+#(if-let [date (first (vals %))]
+   (time/today? date)
+   false)
+#+END_SRC
+
+** Writing to the logbook
+
+~:persistence-fn~ is a function of two arguments, ~entity~ and ~event~. Its responsibility is to append to the logbook and persist the entity.
+You have to provide an implementation or an error will be thrown.
+
+#+BEGIN_SRC clojure
+(set-config! :persistence-fn
+             (fn [entity event] (let [logbook (conj (:logbook entity) {event (t/now)})]
+                                 (assoc entity :logbook logbook)
+                                 (save db entity))))
+#+END_SRC
+
+** Determining the status of the side-effect
+
+The success function is a function of one argument, ie. the return value of the side-effect in the body.
+It determines if the operation was successful so that we can record it in the logbook.
+
+The default assumes all your operations will be A-okay. You’ll probably want to pass along something more realistic.
+
+#+BEGIN_SRC clojure
+(set-config! :success-fn (constantly true))
+#+END_SRC
+
+** Strict or lax policy with unknown events
+
+#+BEGIN_SRC clojure
+(with-logbook entity event
+  body)
+#+END_SRC   
+
+If the event is unkown, that is if it doesn’t show up in the events map, no predicate can be derived and then we rely on a policy. 
+Either we accept unknown events and we proceed with the side-effect, or we reject it. The default is lax.
+
+#+BEGIN_SRC clojure
+(set-config! :allow-undeclared-events? true)
+#+END_SRC
+
+

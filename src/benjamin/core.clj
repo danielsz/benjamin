@@ -22,7 +22,7 @@
                   #'get-logbook (:get-logbook config)
                   #'events (:events config)}
     (when (fn? events) (events))
-    (let [not-found (if allow-undeclared-events? (constantly false)  (constantly true))
+    (let [not-found (if allow-undeclared-events? (constantly false) (constantly true))
           pred (event events not-found)]
       (if (get-logbook entity)
         (not (some pred (filter event (get-logbook entity))))

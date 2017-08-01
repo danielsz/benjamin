@@ -39,10 +39,10 @@ In your namespace, require:
 *** Accessing the logbook
 
 #+BEGIN_SRC clojure
-(set-config! :get-logbook f)
+(set-config! :logbook-fn f)
 #+END_SRC
 
-~get-logbook~ is a function that receives the entity as argument and returns a logbook. 
+~logbook-fn~ is a function that receives the entity as argument and returns a logbook. 
 The default is ~:logbook~ which will work when the entity map embeds the logbook, as in:
 
 #+BEGIN_SRC clojure
@@ -107,11 +107,9 @@ The default assumes all your operations will be A-okay. You’ll probably want t
   body)
 #+END_SRC   
 
-If the event is unkown, that is if it doesn’t show up in the events map, no predicate can be derived and then we rely on a policy. 
+If the event is unkown, that is if it doesn’t show up in the events map, no predicate can be derived and then we rely on a policy you can set yourself. 
 Either we accept unknown events and we proceed with the side-effect, or we reject it. The default is lax.
 
 #+BEGIN_SRC clojure
 (set-config! :allow-undeclared-events? true)
 #+END_SRC
-
-

@@ -89,6 +89,14 @@ You have to provide an implementation or an error will be thrown.
                                  (save db entity))))
 #+END_SRC
 
+Tip: If you have dependencies (a reference to the db), use a higher–order functions that returns ~persistence-fn~.
+Tip: The ~system~ library boasts a lifecycle component that wraps dependencies.
+
+#+BEGIN_SRC clojure
+(defn save [db user])
+(defn persist []
+#+END_SRC
+
 ** Determining the status of the side-effect
 
 The success function is a function of one argument, ie. the return value of the side-effect in the body.

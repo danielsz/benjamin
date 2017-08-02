@@ -111,7 +111,7 @@ You have to provide an implementation or an error will be thrown. For example:
                                  (save db entity))))
 #+END_SRC
 
-Tip: If you have dependencies (a reference to the db), use a higher–order functions that returns ~persistence-fn~.
+Tip: If you have dependencies (a reference to the db), use a higher–order function that returns ~persistence-fn~.
 
 #+BEGIN_SRC clojure
 (defn logbook [{{store :store} :db :as dependencies}]

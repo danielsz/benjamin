@@ -33,7 +33,23 @@ Into this:
 
 In your namespace, require:
 #+BEGIN_SRC clojure
-[benjamin.core :refer [with-logbook set-config!]]
+[benjamin.core :refer [with-logbook]]
+#+END_SRC
+
+** Configuration
+
+- ~logbook-fn~ A function that retrieves a logbook given an entity.
+- ~persistence-fn~ A function that persists an updated logbook given an entity and an event
+- ~success-fn~ A predicate function that determines the succes of ~body~.
+- ~events~ A Clojure map with events as keys and predicates as values.
+- ~allow-undeclared-events?~ a boolean that allows of forbids events that are not registered in the ~events~ map.
+
+TIP:  ~system~ users can configure this library via a [[https://github.com/danielsz/system/blob/f4acb68d1e136720c1f9ab44d65e2eb763b1e6ef/src/system/components/benjamin.clj][component]] that ships with it (latest snapshot). 
+ 
+Manual configuration is done by requiring: 
+
+#+BEGIN_SRC clojure
+[benjamin.configuration :refer [set-config!]]
 #+END_SRC
 
 *** Accessing the logbook
@@ -67,7 +83,7 @@ The default is ~:logbook~ which will work when the entity map embeds the logbook
                       ...})
 #+END_SRC
 
-Predicates are one argument functions that receive a logbook entry. 
+Predicates are one argument functions that receive a logbook entry.
 
 The following example checks if the logbook entry was written today.
 
@@ -77,12 +93,12 @@ The following example checks if the logbook entry was written today.
    false)
 #+END_SRC
 
-Several predicates are offered in the ~benjamin.predicates~ for convenience, but you can provide your own if you prefer. 
+Several predicates are offered in the ~benjamin.predicates~ for convenience. 
 
 ** Writing to the logbook
 
 ~:persistence-fn~ is a function of two arguments, ~entity~ and ~event~. Its responsibility is to append to the logbook and persist the entity.
-You have to provide an implementation or an error will be thrown.
+You have to provide an implementation or an error will be thrown. For example:
 
 #+BEGIN_SRC clojure
 (set-config! :persistence-fn
@@ -92,17 +108,19 @@ You have to provide an implementation or an error will be thrown.
 #+END_SRC
 
 Tip: If you have dependencies (a reference to the db), use a higher–order functions that returns ~persistence-fn~.
-Tip: The ~system~ library boasts a lifecycle component that wraps dependencies.
 
 #+BEGIN_SRC clojure
-(defn save [db user])
-(defn persist []
+(defn logbook [{{store :store} :db :as dependencies}]
+  (fn [entity event] (let [logbook (conj (:logbook entity) {event (t/now)})]
+                       (assoc entity :logbook logbook)
+                       (save db entity)))
 #+END_SRC
+Tip: The ~benjamin~ component in the ~system~ library includes an option that will wrap those dependencies declared in the system map.
 
 ** Determining the status of the side-effect
 
-The success function is a function of one argument, ie. the return value of the side-effect in the body.
-It determines if the operation was successful so that we can record it in the logbook.
+The success function is a function of one argument, ie. the return value of the side-effectful body.
+It determines if the operation was successful for inclusion in the logbook.
 
 The default assumes all your operations will be A-okay. You’ll probably want to pass along something more realistic.
 
@@ -118,8 +136,15 @@ The default assumes all your operations will be A-okay. You’ll probably want t
 #+END_SRC   
 
 If the event is unkown, that is if it doesn’t show up in the events map, no predicate can be derived and then we rely on a policy you can set yourself. 
-Either we accept unknown events and we proceed with the side-effect, or we reject it. The default is lax.
+Either we accept unknown events and we proceed with the side-effect, or we reject it and return immediately. The default is lax.
 
 #+BEGIN_SRC clojure
 (set-config! :allow-undeclared-events? true)
 #+END_SRC
+
+** Limitations
+
+You can work with as many entities you want. You can declare as many events as you want. You can have any side-effect in the body. Your ~success-fn~ may dispatch on the return value if you run different operations.
+
+The configuration has dynamic scope. Treat it as a constant during the lifetime of the application to avoid any trouble. 
+ 

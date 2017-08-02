@@ -3,13 +3,12 @@
  :resource-paths #{"src"}
  :dependencies '[[org.danielsz/detijd "0.1.0-SNAPSHOT" :scope "test"]
                  [adzerk/boot-test "1.2.0" :scope "test"]
-                 [metosin/boot-alt-test "0.3.2" :scope "test"]
-                 [org.clojure/tools.logging "0.3.1" :scope "test"]])
+                 [metosin/boot-alt-test "0.3.2" :scope "test"]])
 
 (task-options!
  push {:repo-map {:url "https://clojars.org/repo/"}}
  pom {:project 'org.danielsz/benjamin
-      :version "0.1.0"
+      :version "0.1.1-SNAPSHOT"
       :scm {:name "git"
             :url "https://github.com/danielsz/benjamin"}})
 

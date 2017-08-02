@@ -93,7 +93,11 @@ The following example checks if the logbook entry was written today.
    false)
 #+END_SRC
 
-Several predicates are offered in the ~benjamin.predicates~ for convenience. 
+Several predicates are offered in the ~benjamin.predicates~ namespace for convenience. That namespace has a dependency that you need to require in your build should you want to use them. This is because ~benjamin~ does not have any dependency of its own (it relies entirely on language features).
+
+#+BEGIN_SRC clojure
+[org.danielsz/detijd "0.1.0-SNAPSHOT"]
+#+END_SRC
 
 ** Writing to the logbook
 
@@ -144,7 +148,9 @@ Either we accept unknown events and we proceed with the side-effect, or we rejec
 
 ** Limitations
 
-You can work with as many entities you want. You can declare as many events as you want. You can have any side-effect in the body. Your ~success-fn~ may dispatch on the return value if you run different operations.
+You can work with as many entities you want. You can declare as many events as you want. You can have any side-effect in the body. Your ~success-fn~ may dispatch on the return value if you run different types of operations in the body.
 
 The configuration has dynamic scope. Treat it as a constant during the lifetime of the application to avoid any trouble. 
- 
+
+** License
+Licensing terms will be revealed shortly. In the meantime, do what you want with it.

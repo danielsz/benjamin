@@ -8,7 +8,7 @@ Benjamin gives you a macro that transforms code likes this:
 
 #+BEGIN_SRC clojure
 (let [logbook (get-logbook entity)]
-  (when (some pred logbook) ; derived from event
+  (when (some pred logbook)
     (let [response (body)]
       (when (success? response)
         (write logbook)))))

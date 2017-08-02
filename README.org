@@ -44,7 +44,7 @@ In your namespace, require:
 - ~events~ A Clojure map with events as keys and predicates as values.
 - ~allow-undeclared-events?~ a boolean that allows of forbids events that are not registered in the ~events~ map.
 
-TIP:  ~system~ users can configure this library via a [[https://github.com/danielsz/system/blob/f4acb68d1e136720c1f9ab44d65e2eb763b1e6ef/src/system/components/benjamin.clj][component]] that ships with the latest snapshot. 
+*Tip:*  ~system~ users can configure this library via a [[https://github.com/danielsz/system/blob/f4acb68d1e136720c1f9ab44d65e2eb763b1e6ef/src/system/components/benjamin.clj][component]] that ships with the latest snapshot. 
  
 Manual configuration is done by requiring: 
 

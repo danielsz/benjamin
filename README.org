@@ -2,8 +2,6 @@
 
 ** Idempotency with side-effects (the Lisp way)
 
-Please read the accompanying [[http://danielsz.github.io/2017/07/31/The-Peirce-pattern][blog]] post for the motivation.
-
 #+HTML: <img src="image/benjamin.jpg" width="340" height="360" align="right"/>
 
 Benjamin gives you a macro that transforms code likes this:
@@ -22,6 +20,8 @@ Into this:
       (when (success? response)
         (write logbook)))))
 #+END_SRC
+
+There is a [[http://danielsz.github.io/2017/07/31/The-Peirce-pattern][blog]] post that delves in the motivation and backstory.
 
 ** Installation 
 
@@ -154,7 +154,7 @@ A test suite is provided in ~benjamin.core-test~. Call ~(test-ns *ns*)~ in the n
 
 You can work with as many entities you want. You can declare as many events as you want. You can have any side-effect in the body. Your ~success-fn~ may dispatch on the return value if you run different types of operations in the body.
 
-The configuration has dynamic scope. Treat it as a constant during the lifetime of the application to avoid any trouble. 
+The configuration is a singleton with dynamic scope, so deal with it to the best of your understanding. Personally, I set it once and treat it as a constant for the lifetime of the application. 
 
 ** License
 Licensing terms will be revealed shortly. In the meantime, do what you want with it.

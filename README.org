@@ -111,7 +111,7 @@ You have to provide an implementation or an error will be thrown. For example:
                                  (save db entity))))
 #+END_SRC
 
-Tip: If you have dependencies (a reference to the db), use a higher–order function that returns ~persistence-fn~.
+*Tip:* If you have dependencies (as a reference to the db), use a higher–order function that returns ~persistence-fn~.
 
 #+BEGIN_SRC clojure
 (defn logbook [{{store :store} :db :as dependencies}]
@@ -119,12 +119,12 @@ Tip: If you have dependencies (a reference to the db), use a higher–order func
                        (assoc entity :logbook logbook)
                        (save db entity)))
 #+END_SRC
-Tip: The ~benjamin~ component in the ~system~ library includes an option that will wrap dependencies associated with it in the system map.
+*Tip:* The ~benjamin~ component in the ~system~ library includes an option that will wrap dependencies associated with it in the system map.
 
 ** Determining the status of the side-effect
 
 The success function is a function of one argument, ie. the return value of the side-effectful body.
-It determines if the operation was successful for inclusion in the logbook.
+It determines if the operation was successful and thus for inclusion in the logbook.
 
 The default assumes all your operations will be A-okay. You’ll probably want to pass along something more realistic.
 
@@ -152,7 +152,7 @@ A test suite is provided in ~benjamin.core-test~. Call ~(test-ns *ns*)~ in the n
 
 ** Limitations
 
-You can work with as many entities you want. You can declare as many events as you want. You can have any side-effect in the body. Your ~success-fn~ may dispatch on the return value if you run different types of operations in the body.
+You can work with as many entities you want. You can declare as many events as you want. You can have any side-effectful procedures in the body. Your ~success-fn~ may dispatch on the return value if you run different types of operations in the body.
 
 The configuration is a singleton with dynamic scope, so deal with it to the best of your understanding. Personally, I set it once and treat it as a constant for the lifetime of the application. 
 

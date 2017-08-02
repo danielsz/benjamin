@@ -6,13 +6,6 @@
 
 Benjamin gives you a macro that transforms code likes this:
 
-#+BEGIN_SRC clojure 
-(with-logbook entity event
-  body)
-#+END_SRC 
-
-Into this:
-
 #+BEGIN_SRC clojure
 (let [logbook (get-logbook entity)]
   (when (some pred logbook) ; derived from event
@@ -20,6 +13,13 @@ Into this:
       (when (success? response)
         (write logbook)))))
 #+END_SRC
+
+Into this:
+
+#+BEGIN_SRC clojure 
+(with-logbook entity event
+  body)
+#+END_SRC 
 
 There is a [[http://danielsz.github.io/2017/07/31/The-Peirce-pattern][blog]] post that delves in the motivation and backstory.
 

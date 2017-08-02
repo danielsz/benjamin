@@ -77,6 +77,8 @@ The following example checks if the logbook entry was written today.
    false)
 #+END_SRC
 
+Several predicates are offered in the ~benjamin.predicates~ for convenience, but you can provide your own if you prefer. 
+
 ** Writing to the logbook
 
 ~:persistence-fn~ is a function of two arguments, ~entity~ and ~event~. Its responsibility is to append to the logbook and persist the entity.

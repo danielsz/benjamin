@@ -27,3 +27,5 @@
                    (when (success-fn result#)
                      (force logbook#))
                    result#))))))
+
+(def with-side-effects with-logbook)

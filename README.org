@@ -1,6 +1,6 @@
 * Benjamin
 
-** Idempotency with side-effects (the Lisp way)
+** Timed idempotency with side-effects
 
 #+HTML: <img src="image/benjamin.jpg" width="340" height="360" align="right"/>
 
@@ -17,11 +17,11 @@ Benjamin gives you a macro that transforms code likes this:
 Into this:
 
 #+BEGIN_SRC clojure 
-(with-logbook entity event
+(with-logbook entity :event
   body)
 #+END_SRC 
 
-There is a [[http://danielsz.github.io/2017/07/31/The-Peirce-pattern][blog]] post that delves in the motivation and backstory.
+There is a [[http://danielsz.github.io/2017/08/07/Timed-idempotency][blog]] post that delves in the motivation and backstory.
 
 ** Installation 
 

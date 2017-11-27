@@ -4,7 +4,7 @@
 
 #+HTML: <img src="image/benjamin.jpg" width="340" height="360" align="right"/>
 
-Benjamin gives you a macro that transforms code likes this:
+Benjamin gives you a macro that transforms code like this:
 
 #+BEGIN_SRC clojure
 (let [logbook (get-logbook entity)]
@@ -126,11 +126,11 @@ You have to provide an implementation or an error will be thrown. For example:
 The success function is a function of one argument, ie. the return value of the side-effectful body.
 It determines if the operation was successful and thus for inclusion in the logbook.
 
-The default assumes all your operations will be A-okay. You’ll probably want to pass along something more realistic.
-
 #+BEGIN_SRC clojure
 (set-config! :success-fn (constantly true))
 #+END_SRC
+
+The default assumes all your operations will be A-okay. You’ll probably want to pass along something more realistic.
 
 ** Strict or lax policy with unknown events
 

@@ -26,7 +26,7 @@ There is a [[http://danielsz.github.io/2017/08/07/Timed-idempotency][blog]] post
 ** Installation 
 
 #+BEGIN_SRC clojure
-[[https://img.shields.io/clojars/v/org.danielsz/benjamin.svg]]
+[[https://clojars.org/org.danielsz/benjamin/latest-version.svg]]
 #+END_SRC
 
 ** Usage

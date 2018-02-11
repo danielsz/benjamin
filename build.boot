@@ -8,7 +8,7 @@
 (task-options!
  push {:repo-map {:url "https://clojars.org/repo/"}}
  pom {:project 'org.danielsz/benjamin
-      :version "0.1.1-SNAPSHOT"
+      :version "0.1.2-SNAPSHOT"
       :scm {:name "git"
             :url "https://github.com/danielsz/benjamin"}})
 

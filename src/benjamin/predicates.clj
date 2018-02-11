@@ -11,3 +11,5 @@
 (def last-3-months? #(if-let [date (first (vals %))]
                        (time/last-months? date 3)
                        false))
+
+(def always? (constantly false))

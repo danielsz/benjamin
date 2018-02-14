@@ -1,7 +1,7 @@
 (set-env!
  :source-paths   #{"src"}
  :resource-paths #{"src"}
- :dependencies '[[org.danielsz/detijd "0.1.0-SNAPSHOT" :scope "test"]
+ :dependencies '[[org.danielsz/detijd "0.1.2-SNAPSHOT" :scope "test"]
                  [adzerk/boot-test "1.2.0" :scope "test"]
                  [metosin/boot-alt-test "0.3.2" :scope "test"]])
 

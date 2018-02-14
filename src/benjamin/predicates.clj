@@ -29,7 +29,7 @@
                      (time/last-days? date 3)
                      false))
 
-(def last-days? [x]
+(defn last-days? [x]
   #(if-let [date (first (vals %))]
      (time/last-days? date x)
      false))

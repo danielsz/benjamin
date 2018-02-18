@@ -1,5 +1,5 @@
 (ns benjamin.predicates
-  (:require  [detijd.core :as time]))
+  (:require  [detijd.predicates :as time]))
 
 (def unique? #(some? %))
 
@@ -7,7 +7,7 @@
                        (time/last-minutes? date 1)
                        false))
 
-(defn last-minutes [x]
+(defn last-minutes? [x]
   #(if-let [date (first (vals %))]
      (time/last-minutes? date x)
      false))

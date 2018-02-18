@@ -38,6 +38,10 @@
   []
   (comp (pom) (jar) (install)))
 
+(deftask dev-checkout
+  []
+  (comp (watch) (build)))
+
 (deftask push-release
   []
   (comp

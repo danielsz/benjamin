@@ -91,9 +91,7 @@ The following example checks if the logbook entry was written today.
 
 Several predicates are offered in the ~benjamin.predicates~ namespace for convenience. That namespace has a dependency that you need to require in your build should you want to use them. This is because ~benjamin~ does not have any dependency of its own (it relies entirely on language features).
 
-#+BEGIN_SRC clojure
-[org.danielsz/detijd "0.1.0-SNAPSHOT"]
-#+END_SRC
+[[https://clojars.org/org.danielsz/detijd/latest-version.svg]]
 
 ** Writing to the logbook
 
@@ -136,7 +134,7 @@ The default assumes all your operations will be A-okay. You’ll probably want t
 #+END_SRC   
 
 If the event is unkown, that is if it doesn’t show up in the events map, no predicate can be derived and then we rely on a policy you can set yourself. 
-Either we accept unknown events and we proceed with the side-effect, or we reject it and return immediately. The default is lax.
+Either we accept unknown events and we proceed with the side-effect, or we reject them and return immediately. The default is strict, but you can change that.
 
 #+BEGIN_SRC clojure
 (set-config! :allow-undeclared-events? true)

@@ -6,7 +6,7 @@
                :success-fn (constantly true)
                :events #(throw (Exception. "Please set event and predicate map"))
                :logbook-fn :logbook
-               :allow-undeclared-events? true})
+               :allow-undeclared-events? false})
 
 (def ^:dynamic config defaults)
 

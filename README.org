@@ -1,7 +1,7 @@
 * Benjamin
 
 
-#+HTML: <img src="image/benjamin.jpg" width="340" height="360" align="right"/>
+#+HTML: <img src="image/benjamin.jpg" width="340" height="360"/>
 
 [[https://clojars.org/org.danielsz/benjamin/latest-version.svg]]
 

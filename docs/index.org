@@ -7,9 +7,7 @@
 #+HTML_HEAD: <link rel="stylesheet" href="css/post.css" type="text/css" media="screen" />
 #+HTML_HEAD:  <script type="text/javascript" src="js/navigation.js"></script>
 
-* Timed idempotency with side-effects
-
-#+HTML: <img src="image/benjamin.jpg" width="340" height="360" align="right"/>
+* Core idea
 
 Benjamin gives you a macro that transforms code like this:
 
@@ -30,8 +28,6 @@ Into this:
 
 There is a [[http://danielsz.github.io/2017/08/07/Timed-idempotency][blog]] post that delves in the motivation and backstory.
 
-* Installation 
-[[https://clojars.org/org.danielsz/benjamin/latest-version.svg]]
 * Usage
 
 In your namespace, require:
@@ -55,7 +51,7 @@ Manual configuration is done by requiring:
 [benjamin.configuration :refer [set-config!]]
 #+END_SRC
 
-*** Accessing the logbook
+** Accessing the logbook
 
 #+BEGIN_SRC clojure
 (set-config! :logbook-fn f)
@@ -77,7 +73,7 @@ The default is ~:logbook~ which will work when the entity map embeds the logbook
            {:newsletter timestamp}]}
 #+END_SRC
 
-*** Deriving predicates from events
+** Deriving predicates from events
 
 #+BEGIN_SRC clojure
 (set-config! :events {:event predicate
@@ -122,7 +118,7 @@ You have to provide an implementation or an error will be thrown. For example:
 #+END_SRC
 *Tip:* The ~benjamin~ component in the ~system~ library includes an option that will wrap dependencies associated with it in the system map.
 
-* Determining the status of the side-effect
+* Querying the status of the side-effect
 
 The success function is a function of one argument, ie. the return value of the side-effectful body.
 It determines if the operation was successful and thus for inclusion in the logbook.
@@ -133,7 +129,7 @@ It determines if the operation was successful and thus for inclusion in the logb
 
 The default assumes all your operations will be A-okay. You’ll probably want to pass along something more realistic.
 
-* Strict or lax policy with unknown events
+* Policy with regards to unknown events
 
 #+BEGIN_SRC clojure
 (with-logbook entity event

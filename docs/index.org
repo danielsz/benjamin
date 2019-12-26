@@ -7,7 +7,7 @@
 #+HTML_HEAD: <link rel="stylesheet" href="css/post.css" type="text/css" media="screen" />
 #+HTML_HEAD:  <script type="text/javascript" src="js/navigation.js"></script>
 
-* Core idea
+* Description
 
 Benjamin gives you a macro that transforms code like this:
 
@@ -118,7 +118,7 @@ You have to provide an implementation or an error will be thrown. For example:
 #+END_SRC
 *Tip:* The ~benjamin~ component in the ~system~ library includes an option that will wrap dependencies associated with it in the system map.
 
-* Querying the status of the side-effect
+* Status of the side-effect
 
 The success function is a function of one argument, ie. the return value of the side-effectful body.
 It determines if the operation was successful and thus for inclusion in the logbook.
@@ -129,14 +129,14 @@ It determines if the operation was successful and thus for inclusion in the logb
 
 The default assumes all your operations will be A-okay. You’ll probably want to pass along something more realistic.
 
-* Policy with regards to unknown events
+* Policy with regard to unknown events
 
 #+BEGIN_SRC clojure
 (with-logbook entity event
   body)
 #+END_SRC   
 
-If the event is unkown, that is if it doesn’t show up in the events map, no predicate can be derived and then we rely on a policy you can set yourself. 
+If the event is unknown, that is if it doesn’t show up in the events map, no predicate can be derived and then we rely on a policy you can set yourself. 
 Either we accept unknown events and we proceed with the side-effect, or we reject them and return immediately. The default is strict, but you can change that.
 
 #+BEGIN_SRC clojure

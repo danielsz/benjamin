@@ -13,10 +13,10 @@
                   #'events (:events config)}
     (when (fn? events) (events))
     (let [not-found (if allow-undeclared-events? (constantly false) (constantly true))
-          pred (event events not-found)]
+          pred (get events event not-found)]
       (if-let [logbook (logbook-fn entity)]
         (not (some pred (filter event logbook)))
-        true))))
+        (get events event allow-undeclared-events?)))))
 
 (defmacro with-logbook [entity event & body]
   `(with-bindings {#'persistence-fn (:persistence-fn config)

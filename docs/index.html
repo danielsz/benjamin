@@ -3,7 +3,7 @@
 "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
-<!-- 2019-12-27 Fri 00:44 -->
+<!-- 2020-02-07 Fri 14:32 -->
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Benjamin</title>
@@ -255,22 +255,23 @@ for the JavaScript code in this tag.
 <h2>Table of Contents</h2>
 <div id="text-table-of-contents">
 <ul>
-<li><a href="#orgc1ac51e">Description</a></li>
-<li><a href="#org74928be">Usage</a></li>
-<li><a href="#orge4abfef">Configuration</a></li>
-<li><a href="#orgb4c6614">Writing to the logbook</a></li>
-<li><a href="#orgd0c4c63">Status of the side-effect</a></li>
-<li><a href="#orga8ae244">Policy with regard to unknown events</a></li>
-<li><a href="#org4103721">Tests</a></li>
-<li><a href="#org93c48c0">Limitations</a></li>
-<li><a href="#orgc85fc7c">License</a></li>
+<li><a href="#org5fb1377">Description</a></li>
+<li><a href="#org5e695e2">Usage</a></li>
+<li><a href="#org9b13f43">Configuration</a></li>
+<li><a href="#org9296a02">Getting the logbook</a></li>
+<li><a href="#orgec9616d">Writing to the logbook</a></li>
+<li><a href="#org6f8ae4c">Status of the side-effect</a></li>
+<li><a href="#org324534d">Policy with regard to unknown events</a></li>
+<li><a href="#orgccb03b1">Tests</a></li>
+<li><a href="#orgc4815b0">Limitations</a></li>
+<li><a href="#orgf6db343">License</a></li>
 </ul>
 </div>
 </div>
 
-<div id="outline-container-orgc1ac51e" class="outline-2">
-<h2 id="orgc1ac51e">Description</h2>
-<div class="outline-text-2" id="text-orgc1ac51e">
+<div id="outline-container-org5fb1377" class="outline-2">
+<h2 id="org5fb1377">Description</h2>
+<div class="outline-text-2" id="text-org5fb1377">
 <p>
 Benjamin gives you a macro that transforms code like this:
 </p>
@@ -300,9 +301,9 @@ There is a <a href="http://danielsz.github.io/2017/08/07/Timed-idempotency">blog
 </div>
 </div>
 
-<div id="outline-container-org74928be" class="outline-2">
-<h2 id="org74928be">Usage</h2>
-<div class="outline-text-2" id="text-org74928be">
+<div id="outline-container-org5e695e2" class="outline-2">
+<h2 id="org5e695e2">Usage</h2>
+<div class="outline-text-2" id="text-org5e695e2">
 <p>
 In your namespace, require:
 </p>
@@ -313,9 +314,9 @@ In your namespace, require:
 </div>
 </div>
 
-<div id="outline-container-orge4abfef" class="outline-2">
-<h2 id="orge4abfef">Configuration</h2>
-<div class="outline-text-2" id="text-orge4abfef">
+<div id="outline-container-org9b13f43" class="outline-2">
+<h2 id="org9b13f43">Configuration</h2>
+<div class="outline-text-2" id="text-org9b13f43">
 <ul class="org-ul">
 <li><code>logbook-fn</code> A function that retrieves a logbook given an entity.</li>
 <li><code>persistence-fn</code> A function that persists an updated logbook given an entity and an event</li>
@@ -338,9 +339,9 @@ Manual configuration is done by requiring:
 </div>
 </div>
 
-<div id="outline-container-org5805bb8" class="outline-3">
-<h3 id="org5805bb8">Accessing the logbook</h3>
-<div class="outline-text-3" id="text-org5805bb8">
+<div id="outline-container-orge8152e4" class="outline-3">
+<h3 id="orge8152e4">Accessing the logbook</h3>
+<div class="outline-text-3" id="text-orge8152e4">
 <div class="org-src-container">
 <pre class="src src-clojure"><span style="color: #707183;">(</span>set-config! <span style="color: #008b8b;">:logbook-fn</span> f<span style="color: #707183;">)</span>
 </pre>
@@ -367,9 +368,9 @@ The default is <code>:logbook</code> which will work when the entity map embeds 
 </div>
 </div>
 
-<div id="outline-container-orgc518ed1" class="outline-3">
-<h3 id="orgc518ed1">Deriving predicates from events</h3>
-<div class="outline-text-3" id="text-orgc518ed1">
+<div id="outline-container-org9fc868b" class="outline-3">
+<h3 id="org9fc868b">Deriving predicates from events</h3>
+<div class="outline-text-3" id="text-org9fc868b">
 <div class="org-src-container">
 <pre class="src src-clojure"><span style="color: #707183;">(</span>set-config! <span style="color: #008b8b;">:events</span> <span style="color: #7388d6;">{</span><span style="color: #008b8b;">:event</span> predicate
                       <span style="color: #008b8b;">:event</span> predicate
@@ -407,9 +408,23 @@ Sorry, your browser does not support SVG.</object>
 </div>
 </div>
 
-<div id="outline-container-orgb4c6614" class="outline-2">
-<h2 id="orgb4c6614">Writing to the logbook</h2>
-<div class="outline-text-2" id="text-orgb4c6614">
+<div id="outline-container-org9296a02" class="outline-2">
+<h2 id="org9296a02">Getting the logbook</h2>
+<div class="outline-text-2" id="text-org9296a02">
+<p>
+<code>:logbook-fn</code> is a function of one argument, <code>entity</code>. Its responsibility is to retrieve the logbook for a entity (user, for example). The return value is a vector of maps, where the map has the event as key, and a date as value. Benjamin will run the predicate associated with the event on the logbook to determine whether the side-effect should is allowed or not.
+</p>
+
+<p>
+<b>Tip:</b> If you have dependencies (for example, a database), use a higher–order function that returns <code>logbook-fn</code>.
+<b>Tip:</b> The <code>benjamin</code> component in the <code>system</code> library has an option called <code>logbook-fn-wrap-component?</code> that is meant to achieve this.
+</p>
+</div>
+</div>
+
+<div id="outline-container-orgec9616d" class="outline-2">
+<h2 id="orgec9616d">Writing to the logbook</h2>
+<div class="outline-text-2" id="text-orgec9616d">
 <p>
 <code>:persistence-fn</code> is a function of two arguments, <code>entity</code> and <code>event</code>. Its responsibility is to append to the logbook and persist the entity.
 You have to provide an implementation or an error will be thrown. For example:
@@ -424,7 +439,7 @@ You have to provide an implementation or an error will be thrown. For example:
 </div>
 
 <p>
-<b>Tip:</b> If you have dependencies (as a reference to the db), use a higher–order function that returns <code>persistence-fn</code>.
+<b>Tip:</b> If you have dependencies (for example, a database), use a higher–order function that returns <code>persistence-fn</code>.
 </p>
 
 <div class="org-src-container">
@@ -435,14 +450,14 @@ You have to provide an implementation or an error will be thrown. For example:
 </pre>
 </div>
 <p>
-<b>Tip:</b> The <code>benjamin</code> component in the <code>system</code> library includes an option that will wrap dependencies associated with it in the system map.
+<b>Tip:</b> The <code>benjamin</code> component in the <code>system</code> library includes an option, <code>persistence-fn-wrap-component?</code>, that will wrap dependencies associated with it in the system map.
 </p>
 </div>
 </div>
 
-<div id="outline-container-orgd0c4c63" class="outline-2">
-<h2 id="orgd0c4c63">Status of the side-effect</h2>
-<div class="outline-text-2" id="text-orgd0c4c63">
+<div id="outline-container-org6f8ae4c" class="outline-2">
+<h2 id="org6f8ae4c">Status of the side-effect</h2>
+<div class="outline-text-2" id="text-org6f8ae4c">
 <p>
 The success function is a function of one argument, ie. the return value of the side-effectful body.
 It determines if the operation was successful and thus for inclusion in the logbook.
@@ -459,9 +474,9 @@ The default assumes all your operations will be A-okay. You’ll probably want t
 </div>
 </div>
 
-<div id="outline-container-orga8ae244" class="outline-2">
-<h2 id="orga8ae244">Policy with regard to unknown events</h2>
-<div class="outline-text-2" id="text-orga8ae244">
+<div id="outline-container-org324534d" class="outline-2">
+<h2 id="org324534d">Policy with regard to unknown events</h2>
+<div class="outline-text-2" id="text-org324534d">
 <div class="org-src-container">
 <pre class="src src-clojure"><span style="color: #707183;">(</span>with-logbook entity event
   body<span style="color: #707183;">)</span>
@@ -480,18 +495,18 @@ Either we accept unknown events and we proceed with the side-effect, or we rejec
 </div>
 </div>
 
-<div id="outline-container-org4103721" class="outline-2">
-<h2 id="org4103721">Tests</h2>
-<div class="outline-text-2" id="text-org4103721">
+<div id="outline-container-orgccb03b1" class="outline-2">
+<h2 id="orgccb03b1">Tests</h2>
+<div class="outline-text-2" id="text-orgccb03b1">
 <p>
 A test suite is provided in <code>benjamin.core-test</code>. Call <code>(test-ns *ns*)</code> in the namespace, or run <code>boot testing</code> for continous testing.
 </p>
 </div>
 </div>
 
-<div id="outline-container-org93c48c0" class="outline-2">
-<h2 id="org93c48c0">Limitations</h2>
-<div class="outline-text-2" id="text-org93c48c0">
+<div id="outline-container-orgc4815b0" class="outline-2">
+<h2 id="orgc4815b0">Limitations</h2>
+<div class="outline-text-2" id="text-orgc4815b0">
 <p>
 You can work with as many entities you want. You can declare as many events as you want. You can have any side-effectful procedures in the body. Your <code>success-fn</code> may dispatch on the return value if you run different types of operations in the body.
 </p>
@@ -502,9 +517,9 @@ The configuration is a singleton with dynamic scope, so deal with it to the best
 </div>
 </div>
 
-<div id="outline-container-orgc85fc7c" class="outline-2">
-<h2 id="orgc85fc7c">License</h2>
-<div class="outline-text-2" id="text-orgc85fc7c">
+<div id="outline-container-orgf6db343" class="outline-2">
+<h2 id="orgf6db343">License</h2>
+<div class="outline-text-2" id="text-orgf6db343">
 <p>
 Licensing terms will be revealed shortly. In the meantime, do what you want with it.
 </p>
@@ -513,7 +528,7 @@ Licensing terms will be revealed shortly. In the meantime, do what you want with
 </div>
 <div id="postamble" class="status">
 <p class="author">Author: Daniel Szmulewicz</p>
-<p class="date">Created: 2019-12-27 Fri 00:44</p>
+<p class="date">Created: 2020-02-07 Fri 14:32</p>
 <p class="validation"><a href="http://validator.w3.org/check?uri=referer">Validate</a></p>
 </div>
 </body>

@@ -43,7 +43,7 @@
                    :remote-repository {:id "clojars",
                                        :url "https://clojars.org/repo"}}},
  :testing {:enabled true, :tools-deps-alias :test},
- :scm {:enabled false},
+ :scm {:enabled true},
  :interactive {:system {:enabled false,
                         :var "a.namespace/system-var",
                         :restart-on-change ["handler.clj"

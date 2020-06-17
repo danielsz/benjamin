@@ -25,6 +25,10 @@
                (time/today? date)
                false))
 
+(def same-week-number? #(if-let [date (first (vals %))]
+                          (time/same-week-number? date)
+                          false))
+
 (def last-3-days? #(if-let [date (first (vals %))]
                      (time/last-days? date 3)
                      false))

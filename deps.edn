@@ -1,3 +1,1 @@
-{:deps {org.danielsz/detijd {:mvn/version "0.1.3"}
-        adzerk/boot-test {:mvn/version "1.2.0"}
-        metosin/boot-alt-test {:mvn/version "0.3.2"}}}
+{:deps {org.danielsz/detijd {:mvn/version "0.1.5"}}}

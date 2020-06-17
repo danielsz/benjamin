@@ -1,6 +1,6 @@
 {:pom {:group-id "org.danielsz",
        :artifact-id "benjamin",
-       :version "0.1.3",
+       :version "0.1.4",
        :name "benjamin"},
  :build-properties {:project-build-sourceEncoding "UTF-8"},
  :packaging {:uberjar {:enabled false,

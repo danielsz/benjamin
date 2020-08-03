@@ -41,7 +41,7 @@ In your namespace, require:
 - ~persistence-fn~ A function that persists an updated logbook given an entity and an event
 - ~success-fn~ A predicate function that determines the succes of ~body~.
 - ~events~ A Clojure map with events as keys and predicates as values.
-- ~allow-undeclared-events?~ a boolean that allows of forbids events that are not registered in the ~events~ map.
+- ~allow-undeclared-events?~ When Benjamin receives an event not found in the ~events~ map, it will either allows ~body~ to run or forbid it. This  boolean setting determines this behavior. Defaults to false. 
 
 *Tip:*  ~system~ users can configure this library via a [[https://github.com/danielsz/system/blob/f4acb68d1e136720c1f9ab44d65e2eb763b1e6ef/src/system/components/benjamin.clj][component]] that ships with the latest snapshot. 
  

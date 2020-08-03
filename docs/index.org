@@ -35,11 +35,18 @@ In your namespace, require:
 [benjamin.core :refer [with-logbook]]
 #+END_SRC
 
+#+begin_src clojure
+(with-logbook user :newsletter
+  (email (:email user) newsletter))  
+#+end_src
+
+Benjamin executes ~body~ in a future and returns that future object immediately. Deref'ing the latter is subject to the semantics of futures (blocks until operations complete). ~success-fn~ is provided to determine the success of ~body~. ~success-fn~ runs within the same thread as ~body~ and will never block. 
+
 * Configuration
 
 - ~logbook-fn~ A function that retrieves a logbook given an entity.
 - ~persistence-fn~ A function that persists an updated logbook given an entity and an event
-- ~success-fn~ A predicate function that determines the succes of ~body~.
+- ~success-fn~ A predicate function that determines the success of ~body~. 
 - ~events~ A Clojure map with events as keys and predicates as values.
 - ~allow-undeclared-events?~ When Benjamin receives an event not found in the ~events~ map, it will either allows ~body~ to run or forbid it. This  boolean setting determines this behavior. Defaults to false. 
 

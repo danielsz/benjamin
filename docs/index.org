@@ -40,7 +40,7 @@ In your namespace, require:
   (email (:email user) newsletter))  
 #+end_src
 
-Benjamin executes ~body~ in a future and returns that future object immediately. Deref'ing the latter is subject to the semantics of futures (blocks until operations complete). ~success-fn~ is provided to determine the success of ~body~. ~success-fn~ runs within the same thread as ~body~ and will never block. 
+Benjamin executes ~body~ in a /future/ and returns that /future/ object immediately. Deref'ing the latter is subject to the semantics of /futures/ (blocks until operations complete). ~success-fn~ is provided to determine the success of ~body~. ~success-fn~ runs within the same thread as ~body~ and will not block. 
 
 * Configuration
 

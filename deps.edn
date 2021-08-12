@@ -1,1 +1,7 @@
-{:deps {org.danielsz/detijd {:mvn/version "0.1.5"}}}
+{:deps {org.danielsz/detijd {:mvn/version "0.2.2"}}
+ :aliases {:test {:extra-paths ["test"]
+                  :extra-deps {io.github.cognitect-labs/test-runner
+                               {:git/url "https://github.com/cognitect-labs/test-runner.git"
+                                :sha "8c3f22363d63715de4087b038d79ae0de36a3263"}}
+                  :main-opts ["-m" "cognitect.test-runner"]
+                  :exec-fn cognitect.test-runner.api/test}}}

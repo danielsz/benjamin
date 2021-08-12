@@ -1,6 +1,6 @@
 {:pom {:group-id "org.danielsz",
        :artifact-id "benjamin",
-       :version "0.1.4",
+       :version "0.1.5",
        :name "benjamin"},
  :build-properties {:project-build-sourceEncoding "UTF-8"},
  :packaging {:uberjar {:enabled false,
@@ -40,6 +40,8 @@
                                             :jpeg {:dirs ["resources/images/logo"
                                                           "resources/images/testimonials"]}}}},
              :jar {:enabled true,
+                   :gpg {:enabled false}
+                   :sources {:enabled false}
                    :remote-repository {:id "clojars",
                                        :url "https://clojars.org/repo"}}},
  :testing {:enabled true, :tools-deps-alias :test},

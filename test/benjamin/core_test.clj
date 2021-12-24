@@ -2,7 +2,7 @@
   (:require [benjamin.core :refer [with-logbook]]
             [benjamin.configuration :as config :refer [set-config!]]
             [benjamin.predicates :refer [unique? today? last-3-days? last-3-months?]]
-            [clojure.test :refer [testing deftest is use-fixtures with-test test-ns]]
+            [clojure.test :refer [testing deftest is use-fixtures]]
             [clj-time.core :as t]))
 
 (def clean-slate {:name "Benjamin Peirce"})

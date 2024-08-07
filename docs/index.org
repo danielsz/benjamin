@@ -125,7 +125,7 @@ You have to provide an implementation or an error will be thrown. For example:
 *Tip:* If you have dependencies (for example, a database), use a higher–order function that returns ~persistence-fn~.
 
 #+BEGIN_SRC clojure
-(defn logbook [{{store :store} :db :as dependencies}]
+(defn logbook [db :db :as dependencies}]
   (fn [entity event] (let [logbook (conj (:logbook entity) {event (t/now)})]
                        (assoc entity :logbook logbook)
                        (save db entity)))

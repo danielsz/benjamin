@@ -3,14 +3,14 @@
 "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
-<!-- 2020-08-03 Mon 14:38 -->
+<!-- 2024-08-07 Wed 17:47 -->
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Benjamin</title>
-<meta name="generator" content="Org mode" />
 <meta name="author" content="Daniel Szmulewicz" />
-<style type="text/css">
- <!--/*--><![CDATA[/*><!--*/
+<meta name="generator" content="Org Mode" />
+<style>
+  #content { max-width: 60em; margin: auto; }
   .title  { text-align: center;
              margin-bottom: .2em; }
   .subtitle { text-align: center;
@@ -31,8 +31,9 @@
   #postamble p, #preamble p { font-size: 90%; margin: .2em; }
   p.verse { margin-left: 3%; }
   pre {
-    border: 1px solid #ccc;
-    box-shadow: 3px 3px 3px #eee;
+    border: 1px solid #e6e6e6;
+    border-radius: 3px;
+    background-color: #f2f2f2;
     padding: 8pt;
     font-family: monospace;
     overflow: auto;
@@ -40,22 +41,22 @@
   }
   pre.src {
     position: relative;
-    overflow: visible;
-    padding-top: 1.2em;
+    overflow: auto;
   }
   pre.src:before {
     display: none;
     position: absolute;
-    background-color: white;
-    top: -10px;
-    right: 10px;
+    top: -8px;
+    right: 12px;
     padding: 3px;
-    border: 1px solid black;
+    color: #555;
+    background-color: #f2f2f299;
   }
-  pre.src:hover:before { display: inline;}
+  pre.src:hover:before { display: inline; margin-top: 14px;}
   /* Languages per Org manual */
   pre.src-asymptote:before { content: 'Asymptote'; }
   pre.src-awk:before { content: 'Awk'; }
+  pre.src-authinfo::before { content: 'Authinfo'; }
   pre.src-C:before { content: 'C'; }
   /* pre.src-C++ doesn't work in CSS */
   pre.src-clojure:before { content: 'Clojure'; }
@@ -190,88 +191,41 @@
     { font-size: 10px; font-weight: bold; white-space: nowrap; }
   .org-info-js_search-highlight
     { background-color: #ffff00; color: #000000; font-weight: bold; }
-  .org-svg { width: 90%; }
-  /*]]>*/-->
+  .org-svg { }
 </style>
 <link rel="stylesheet" href="css/et-book.css" type="text/css" media="screen" />
 <link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,300i,400,600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="css/main.css" type="text/css" media="screen" />
 <link rel="stylesheet" href="css/post.css" type="text/css" media="screen" />
 <script type="text/javascript" src="js/navigation.js"></script>
-<script type="text/javascript">
-/*
-@licstart  The following is the entire license notice for the
-JavaScript code in this tag.
-
-Copyright (C) 2012-2020 Free Software Foundation, Inc.
-
-The JavaScript code in this tag is free software: you can
-redistribute it and/or modify it under the terms of the GNU
-General Public License (GNU GPL) as published by the Free Software
-Foundation, either version 3 of the License, or (at your option)
-any later version.  The code is distributed WITHOUT ANY WARRANTY;
-without even the implied warranty of MERCHANTABILITY or FITNESS
-FOR A PARTICULAR PURPOSE.  See the GNU GPL for more details.
-
-As additional permission under GNU GPL version 3 section 7, you
-may distribute non-source (e.g., minimized or compacted) forms of
-that code without the copy of the GNU GPL normally required by
-section 4, provided you include this license notice and a URL
-through which recipients can access the Corresponding Source.
-
-
-@licend  The above is the entire license notice
-for the JavaScript code in this tag.
-*/
-<!--/*--><![CDATA[/*><!--*/
- function CodeHighlightOn(elem, id)
- {
-   var target = document.getElementById(id);
-   if(null != target) {
-     elem.cacheClassElem = elem.className;
-     elem.cacheClassTarget = target.className;
-     target.className = "code-highlighted";
-     elem.className   = "code-highlighted";
-   }
- }
- function CodeHighlightOff(elem, id)
- {
-   var target = document.getElementById(id);
-   if(elem.cacheClassElem)
-     elem.className = elem.cacheClassElem;
-   if(elem.cacheClassTarget)
-     target.className = elem.cacheClassTarget;
- }
-/*]]>*///-->
-</script>
 </head>
 <body>
-<div id="content">
+<div id="content" class="content">
 <h1 class="title">Benjamin
 <br />
 <span class="subtitle">Idempotency with side-effects</span>
 </h1>
-<div id="table-of-contents">
+<div id="table-of-contents" role="doc-toc">
 <h2>Table of Contents</h2>
-<div id="text-table-of-contents">
+<div id="text-table-of-contents" role="doc-toc">
 <ul>
-<li><a href="#orgad62d34">Description</a></li>
-<li><a href="#org9553e5a">Usage</a></li>
-<li><a href="#orgae4c26f">Configuration</a></li>
-<li><a href="#orgadb22b1">Getting the logbook</a></li>
-<li><a href="#org0075e6f">Writing to the logbook</a></li>
-<li><a href="#org8233747">Status of the side-effect</a></li>
-<li><a href="#org08794e5">Policy with regard to unknown events</a></li>
-<li><a href="#org0b14f33">Tests</a></li>
-<li><a href="#org14492a0">Limitations</a></li>
-<li><a href="#orgc28660f">License</a></li>
+<li><a href="#orgd0c0961">Description</a></li>
+<li><a href="#org9fbb065">Usage</a></li>
+<li><a href="#orgf376ed6">Configuration</a></li>
+<li><a href="#org2212a50">Getting the logbook</a></li>
+<li><a href="#org10a0eab">Writing to the logbook</a></li>
+<li><a href="#org177cd29">Status of the side-effect</a></li>
+<li><a href="#orgccb2d91">Policy with regard to unknown events</a></li>
+<li><a href="#org8bd98bd">Tests</a></li>
+<li><a href="#org4b12cf4">Limitations</a></li>
+<li><a href="#org2b072eb">License</a></li>
 </ul>
 </div>
 </div>
 
-<div id="outline-container-orgad62d34" class="outline-2">
-<h2 id="orgad62d34">Description</h2>
-<div class="outline-text-2" id="text-orgad62d34">
+<div id="outline-container-orgd0c0961" class="outline-2">
+<h2 id="orgd0c0961">Description</h2>
+<div class="outline-text-2" id="text-orgd0c0961">
 <p>
 Benjamin gives you a macro that transforms code like this:
 </p>
@@ -301,9 +255,9 @@ There is a <a href="http://danielsz.github.io/2017/08/07/Timed-idempotency">blog
 </div>
 </div>
 
-<div id="outline-container-org9553e5a" class="outline-2">
-<h2 id="org9553e5a">Usage</h2>
-<div class="outline-text-2" id="text-org9553e5a">
+<div id="outline-container-org9fbb065" class="outline-2">
+<h2 id="org9fbb065">Usage</h2>
+<div class="outline-text-2" id="text-org9fbb065">
 <p>
 In your namespace, require:
 </p>
@@ -324,9 +278,9 @@ Benjamin executes <code>body</code> in a <i>future</i> and returns that <i>futur
 </div>
 </div>
 
-<div id="outline-container-orgae4c26f" class="outline-2">
-<h2 id="orgae4c26f">Configuration</h2>
-<div class="outline-text-2" id="text-orgae4c26f">
+<div id="outline-container-orgf376ed6" class="outline-2">
+<h2 id="orgf376ed6">Configuration</h2>
+<div class="outline-text-2" id="text-orgf376ed6">
 <ul class="org-ul">
 <li><code>logbook-fn</code> A function that retrieves a logbook given an entity.</li>
 <li><code>persistence-fn</code> A function that persists an updated logbook given an entity and an event</li>
@@ -349,9 +303,9 @@ Manual configuration is done by requiring:
 </div>
 </div>
 
-<div id="outline-container-org9ea4d7a" class="outline-3">
-<h3 id="org9ea4d7a">Accessing the logbook</h3>
-<div class="outline-text-3" id="text-org9ea4d7a">
+<div id="outline-container-org4d1a860" class="outline-3">
+<h3 id="org4d1a860">Accessing the logbook</h3>
+<div class="outline-text-3" id="text-org4d1a860">
 <div class="org-src-container">
 <pre class="src src-clojure"><span style="color: #707183;">(</span>set-config! <span style="color: #008b8b;">:logbook-fn</span> f<span style="color: #707183;">)</span>
 </pre>
@@ -378,9 +332,9 @@ The default is <code>:logbook</code> which will work when the entity map embeds 
 </div>
 </div>
 
-<div id="outline-container-org3bc58e7" class="outline-3">
-<h3 id="org3bc58e7">Deriving predicates from events</h3>
-<div class="outline-text-3" id="text-org3bc58e7">
+<div id="outline-container-orgba62de0" class="outline-3">
+<h3 id="orgba62de0">Deriving predicates from events</h3>
+<div class="outline-text-3" id="text-orgba62de0">
 <div class="org-src-container">
 <pre class="src src-clojure"><span style="color: #707183;">(</span>set-config! <span style="color: #008b8b;">:events</span> <span style="color: #7388d6;">{</span><span style="color: #008b8b;">:event</span> predicate
                       <span style="color: #008b8b;">:event</span> predicate
@@ -409,18 +363,17 @@ Several predicates are offered in the <code>benjamin.predicates</code> namespace
 </p>
 
 
-<div class="figure">
-<p><object type="image/svg+xml" data="https://clojars.org/org.danielsz/detijd/latest-version.svg" class="org-svg">
-Sorry, your browser does not support SVG.</object>
+<div id="orgc5a74db" class="figure">
+<p><img src="https://clojars.org/org.danielsz/detijd/latest-version.svg" alt="latest-version.svg" class="org-svg" />
 </p>
 </div>
 </div>
 </div>
 </div>
 
-<div id="outline-container-orgadb22b1" class="outline-2">
-<h2 id="orgadb22b1">Getting the logbook</h2>
-<div class="outline-text-2" id="text-orgadb22b1">
+<div id="outline-container-org2212a50" class="outline-2">
+<h2 id="org2212a50">Getting the logbook</h2>
+<div class="outline-text-2" id="text-org2212a50">
 <p>
 <code>:logbook-fn</code> is a function of one argument, <code>entity</code>. Its responsibility is to retrieve the logbook for a entity (user, for example). The return value is a vector of maps, where the map has the event as key, and a date as value. Benjamin will run the predicate associated with the event on the logbook to determine whether the side-effect should is allowed or not.
 </p>
@@ -432,9 +385,9 @@ Sorry, your browser does not support SVG.</object>
 </div>
 </div>
 
-<div id="outline-container-org0075e6f" class="outline-2">
-<h2 id="org0075e6f">Writing to the logbook</h2>
-<div class="outline-text-2" id="text-org0075e6f">
+<div id="outline-container-org10a0eab" class="outline-2">
+<h2 id="org10a0eab">Writing to the logbook</h2>
+<div class="outline-text-2" id="text-org10a0eab">
 <p>
 <code>:persistence-fn</code> is a function of two arguments, <code>entity</code> and <code>event</code>. Its responsibility is to append to the logbook and persist the entity.
 You have to provide an implementation or an error will be thrown. For example:
@@ -453,10 +406,10 @@ You have to provide an implementation or an error will be thrown. For example:
 </p>
 
 <div class="org-src-container">
-<pre class="src src-clojure"><span style="color: #707183;">(</span><span style="color: #a020f0;">defn</span> <span style="color: #0000ff;">logbook</span> <span style="color: #7388d6;">[</span><span style="color: #909183;">{</span><span style="color: #709870;">{</span>store <span style="color: #008b8b;">:store</span><span style="color: #709870;">}</span> <span style="color: #008b8b;">:db</span> <span style="color: #008b8b;">:as</span> dependencies<span style="color: #909183;">}</span><span style="color: #7388d6;">]</span>
-  <span style="color: #7388d6;">(</span><span style="color: #a020f0;">fn</span> <span style="color: #909183;">[</span>entity event<span style="color: #909183;">]</span> <span style="color: #909183;">(</span><span style="color: #a020f0;">let</span> <span style="color: #709870;">[</span>logbook <span style="color: #907373;">(</span>conj <span style="color: #6276ba;">(</span><span style="color: #008b8b;">:logbook</span> entity<span style="color: #6276ba;">)</span> <span style="color: #6276ba;">{</span>event <span style="color: #858580;">(</span><span style="color: #228b22;">t</span>/now<span style="color: #858580;">)</span><span style="color: #6276ba;">}</span><span style="color: #907373;">)</span><span style="color: #709870;">]</span>
-                       <span style="color: #709870;">(</span>assoc entity <span style="color: #008b8b;">:logbook</span> logbook<span style="color: #709870;">)</span>
-                       <span style="color: #709870;">(</span>save db entity<span style="color: #709870;">)</span><span style="color: #909183;">)</span><span style="color: #7388d6;">)</span>
+<pre class="src src-clojure"><span style="color: #707183;">(</span><span style="color: #a020f0;">defn</span> <span style="color: #0000ff;">logbook</span> <span style="color: #7388d6;">[</span>db <span style="color: #008b8b;">:db</span> <span style="color: #008b8b;">:as</span> dependencies<span style="color: #88090B;">}]</span>
+  <span style="color: #707183;">(</span><span style="color: #a020f0;">fn</span> <span style="color: #7388d6;">[</span>entity event<span style="color: #7388d6;">]</span> <span style="color: #7388d6;">(</span><span style="color: #a020f0;">let</span> <span style="color: #909183;">[</span>logbook <span style="color: #709870;">(</span>conj <span style="color: #907373;">(</span><span style="color: #008b8b;">:logbook</span> entity<span style="color: #907373;">)</span> <span style="color: #907373;">{</span>event <span style="color: #6276ba;">(</span><span style="color: #228b22;">t</span>/now<span style="color: #6276ba;">)</span><span style="color: #907373;">}</span><span style="color: #709870;">)</span><span style="color: #909183;">]</span>
+                       <span style="color: #909183;">(</span>assoc entity <span style="color: #008b8b;">:logbook</span> logbook<span style="color: #909183;">)</span>
+                       <span style="color: #909183;">(</span>save db entity<span style="color: #909183;">)</span><span style="color: #7388d6;">)</span><span style="color: #707183;">)</span>
 </pre>
 </div>
 <p>
@@ -465,9 +418,9 @@ You have to provide an implementation or an error will be thrown. For example:
 </div>
 </div>
 
-<div id="outline-container-org8233747" class="outline-2">
-<h2 id="org8233747">Status of the side-effect</h2>
-<div class="outline-text-2" id="text-org8233747">
+<div id="outline-container-org177cd29" class="outline-2">
+<h2 id="org177cd29">Status of the side-effect</h2>
+<div class="outline-text-2" id="text-org177cd29">
 <p>
 The success function is a function of one argument, ie. the return value of the side-effectful body.
 It determines if the operation was successful and thus for inclusion in the logbook.
@@ -484,9 +437,9 @@ The default assumes all your operations will be A-okay. You’ll probably want t
 </div>
 </div>
 
-<div id="outline-container-org08794e5" class="outline-2">
-<h2 id="org08794e5">Policy with regard to unknown events</h2>
-<div class="outline-text-2" id="text-org08794e5">
+<div id="outline-container-orgccb2d91" class="outline-2">
+<h2 id="orgccb2d91">Policy with regard to unknown events</h2>
+<div class="outline-text-2" id="text-orgccb2d91">
 <div class="org-src-container">
 <pre class="src src-clojure"><span style="color: #707183;">(</span>with-logbook entity event
   body<span style="color: #707183;">)</span>
@@ -505,18 +458,18 @@ Either we accept unknown events and we proceed with the side-effect, or we rejec
 </div>
 </div>
 
-<div id="outline-container-org0b14f33" class="outline-2">
-<h2 id="org0b14f33">Tests</h2>
-<div class="outline-text-2" id="text-org0b14f33">
+<div id="outline-container-org8bd98bd" class="outline-2">
+<h2 id="org8bd98bd">Tests</h2>
+<div class="outline-text-2" id="text-org8bd98bd">
 <p>
 A test suite is provided in <code>benjamin.core-test</code>. Call <code>(test-ns *ns*)</code> in the namespace, or run <code>boot testing</code> for continous testing.
 </p>
 </div>
 </div>
 
-<div id="outline-container-org14492a0" class="outline-2">
-<h2 id="org14492a0">Limitations</h2>
-<div class="outline-text-2" id="text-org14492a0">
+<div id="outline-container-org4b12cf4" class="outline-2">
+<h2 id="org4b12cf4">Limitations</h2>
+<div class="outline-text-2" id="text-org4b12cf4">
 <p>
 You can work with as many entities you want. You can declare as many events as you want. You can have any side-effectful procedures in the body. Your <code>success-fn</code> may dispatch on the return value if you run different types of operations in the body.
 </p>
@@ -527,9 +480,9 @@ The configuration is a singleton with dynamic scope, so deal with it to the best
 </div>
 </div>
 
-<div id="outline-container-orgc28660f" class="outline-2">
-<h2 id="orgc28660f">License</h2>
-<div class="outline-text-2" id="text-orgc28660f">
+<div id="outline-container-org2b072eb" class="outline-2">
+<h2 id="org2b072eb">License</h2>
+<div class="outline-text-2" id="text-org2b072eb">
 <p>
 Licensing terms will be revealed shortly. In the meantime, do what you want with it.
 </p>
@@ -538,8 +491,8 @@ Licensing terms will be revealed shortly. In the meantime, do what you want with
 </div>
 <div id="postamble" class="status">
 <p class="author">Author: Daniel Szmulewicz</p>
-<p class="date">Created: 2020-08-03 Mon 14:38</p>
-<p class="validation"><a href="http://validator.w3.org/check?uri=referer">Validate</a></p>
+<p class="date">Created: 2024-08-07 Wed 17:47</p>
+<p class="validation"><a href="https://validator.w3.org/check?uri=referer">Validate</a></p>
 </div>
 </body>
 </html>

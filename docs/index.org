@@ -44,13 +44,13 @@ Benjamin executes ~body~ in a /future/ and returns that /future/ object immediat
 
 * Configuration
 
-- ~logbook-fn~ A function that retrieves a logbook given an entity.
+- ~logbook-fn~ A function that retrieves a logbook given an entity and an event.
 - ~persistence-fn~ A function that persists an updated logbook given an entity and an event
 - ~success-fn~ A predicate function that determines the success of ~body~. 
 - ~events~ A Clojure map with events as keys and predicates as values.
 - ~allow-undeclared-events?~ When Benjamin receives an event not found in the ~events~ map, it will either allows ~body~ to run or forbid it. This  boolean setting determines this behavior. Defaults to false. 
 
-*Tip:*  ~system~ users can configure this library via a [[https://github.com/danielsz/system/blob/f4acb68d1e136720c1f9ab44d65e2eb763b1e6ef/src/system/components/benjamin.clj][component]] that ships with the latest snapshot. 
+*Tip:*  ~system~ users can configure this library via a [[https://github.com/danielsz/system/blob/f4acb68d1e136720c1f9ab44d65e2eb763b1e6ef/src/system/components/benjamin.clj][component]] that is built-in. 
  
 Manual configuration is done by requiring: 
 
@@ -64,20 +64,16 @@ Manual configuration is done by requiring:
 (set-config! :logbook-fn f)
 #+END_SRC
 
-~logbook-fn~ is a function that receives the entity as argument and returns a logbook. 
-The default is ~:logbook~ which will work when the entity map embeds the logbook, as in:
+~logbook-fn~ is a function that receives the entity and event as argument and returns a logbook. 
 
 #+BEGIN_SRC clojure
 {:first-name "Benjamin"
  :last-name "Peirce"
  :occupation "Mathematician"
  :email "benjamin.peirce@harvard.edu"
- :logbook [{:welcome-email timestamp}
-           {:subscription-reminder timestamp}
-           {:subscription-reminder timestamp}
-           {:newsletter timestamp}
-           {:newsletter timestamp}
-           {:newsletter timestamp}]}
+ :logbook [{:welcome-email [timestamp timestamp ...]}
+           {:subscription-reminder [timestamp timestamp ...]}
+           {:newsletter [timestamp timestamp ...]}]}
 #+END_SRC
 
 ** Deriving predicates from events
@@ -89,31 +85,55 @@ The default is ~:logbook~ which will work when the entity map embeds the logbook
                       ...})
 #+END_SRC
 
-Predicates are one argument functions that receive a logbook entry. A logbook entry is a map with an event as the key and a timestamp as the value. 
+Predicates are one argument functions that operates on a timestamp.
+Given a logbook, which is a collection of timestamps, predicates will
+be used like so:
 
-The following example checks if the logbook entry was written today.
+#+begin_src elisp :lexical no
+(some pred logbook)
+#+end_src
 
-#+BEGIN_SRC clojure
-#(if-let [date (first (vals %))]
-   (time/today? date)
-   false)
-#+END_SRC
-
-Several predicates are offered in the ~benjamin.predicates~ namespace for convenience. That namespace has a dependency that you need to require in your build should you want to use them. This is because ~benjamin~ does not have any dependency of its own (it relies entirely on language features).
+A predicate function can be written by the user, but one may find a
+host of ready-to-use predicates in another open-source library of mine
+called [[https://clojars.org/org.danielsz/detijd][detijd]].
 
 [[https://clojars.org/org.danielsz/detijd/latest-version.svg]]
 
+For example, ~today?~ is a polymorphic function that can
+accommodate an instance of ~java.util.Date~, ~org.joda.timeDateTime~ or
+~java.time.Instant~.
+
+If you would like to send an email to a user but make sure he doesn't
+get more than one mail per day, the map of events would include
+something like this:
+
+#+BEGIN_SRC clojure
+{:logbook/daily today?}
+#+END_SRC
+
+Note: ~Benjamin~ does not have any dependency of its own (it relies entirely on language features).
+
 * Getting the logbook
 
-~:logbook-fn~ is a function of one argument, ~entity~. Its responsibility is to retrieve the logbook for a entity (user, for example). The return value is a vector of maps, where the map has the event as key, and a date as value. Benjamin will run the predicate associated with the event on the logbook to determine whether the side-effect should is allowed or not.
+~:logbook-fn~ is a function of two arguments, ~entity~ and ~event~.  Its
+responsibility is to retrieve the logbook for an entity (a user, for
+example) and an event. You should write this function such that it
+returns a collection of dates or timestamps. Benjamin will apply the
+predicate associated with the event on the logbook to determine
+whether the side-effect should run. 
 
-*Tip:* If you have dependencies (for example, a database), use a higher–order function that returns ~logbook-fn~.
-*Tip:* The ~benjamin~ component in the ~system~ library has an option called ~logbook-fn-wrap-component?~ that is meant to achieve this.
+*Tip:* If you have dependencies (for example, a database), use a
+ higher–order function that returns ~logbook-fn~.
+ 
+*Tip:* The ~benjamin~ component in the ~system~ library has an option called
+~logbook-fn-wrap-component?~ that is meant to achieve this.
 
 * Writing to the logbook
 
-~:persistence-fn~ is a function of two arguments, ~entity~ and ~event~. Its responsibility is to append to the logbook and persist the entity.
-You have to provide an implementation or an error will be thrown. For example:
+~:persistence-fn~ is a function of two arguments, ~entity~ and ~event~. Its
+responsibility is to append to the logbook and persist the entity.
+You have to provide an implementation or an error will be thrown. For
+example:
 
 #+BEGIN_SRC clojure
 (set-config! :persistence-fn
@@ -125,7 +145,7 @@ You have to provide an implementation or an error will be thrown. For example:
 *Tip:* If you have dependencies (for example, a database), use a higher–order function that returns ~persistence-fn~.
 
 #+BEGIN_SRC clojure
-(defn logbook [db :db :as dependencies}]
+(defn logbook [{db :db :as dependencies}]
   (fn [entity event] (let [logbook (conj (:logbook entity) {event (t/now)})]
                        (assoc entity :logbook logbook)
                        (save db entity)))
@@ -134,7 +154,7 @@ You have to provide an implementation or an error will be thrown. For example:
 
 * Status of the side-effect
 
-The success function is a function of one argument, ie. the return value of the side-effectful body.
+The success function is a function of one argument, ie. the return value of the effectful body.
 It determines if the operation was successful and thus for inclusion in the logbook.
 
 #+BEGIN_SRC clojure
@@ -159,13 +179,17 @@ Either we accept unknown events and we proceed with the side-effect, or we rejec
 
 * Tests
 
-A test suite is provided in ~benjamin.core-test~. Call ~(test-ns *ns*)~ in the namespace, or run ~boot testing~ for continous testing.
+A test suite is provided in ~benjamin.core-test~. Call ~(test-ns *ns*)~ in the namespace, or run ~myvn test~ for continuous testing.
 
 * Limitations
 
-You can work with as many entities you want. You can declare as many events as you want. You can have any side-effectful procedures in the body. Your ~success-fn~ may dispatch on the return value if you run different types of operations in the body.
+You can work with as many entities you want. You can declare as many
+events as you want. You can have any number of effects in the
+body. The ~success-fn~ is applied on the return value of the last effect in the body.
 
-The configuration is a singleton with dynamic scope, so deal with it to the best of your understanding. Personally, I set it once and treat it as a constant for the lifetime of the application. 
+The configuration is a singleton with dynamic scope, so deal with it
+to the best of your understanding. Personally, I set it once and treat
+it as a constant for the lifetime of the application.
 
 * License
 Licensing terms will be revealed shortly. In the meantime, do what you want with it.

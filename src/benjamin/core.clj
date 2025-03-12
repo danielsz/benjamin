@@ -14,8 +14,8 @@
     (when (fn? events) (events))
     (let [not-found (if allow-undeclared-events? (constantly false) (constantly true))
           pred (get events event not-found)]
-      (if-let [logbook (logbook-fn entity)]
-        (not (some pred (filter event logbook)))
+      (if-let [logbook (seq (logbook-fn entity event))]
+        (not (some pred logbook))
         (get events event allow-undeclared-events?)))))
 
 (defmacro with-logbook [entity event & body]

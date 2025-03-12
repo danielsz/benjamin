@@ -1,12 +1,28 @@
 (ns benjamin.core-test
   (:require [benjamin.core :refer [with-logbook]]
             [benjamin.configuration :as config :refer [set-config!]]
-            [benjamin.predicates :refer [unique? today? last-3-days? last-3-months?]]
-            [clojure.test :refer [testing deftest is use-fixtures]]
-            [clj-time.core :as t]))
+            [detijd.predicates :refer [today? last-days? last-months?]]
+            [clojure.test :refer [testing deftest is use-fixtures]])
+  (:import [java.time Instant]))
 
 (def clean-slate {:name "Benjamin Peirce"})
 (def user (atom clean-slate))
+
+(defn persistence-fn [entity event]
+  (if-let [entry-index (first (keep-indexed (fn [idx entry] (when (= (:event entry) event) idx)) (:logbook @entity)))]                       
+    (swap! entity update-in [:logbook entry-index :timestamps] conj (Instant/now))
+    (swap! entity update :logbook (fnil #(conj % {:event event :timestamps [(Instant/now)]}) []))))
+
+(defn logbook-fn [entity event]
+  (if-let [logbook (first (filter #(= event (:event %)) (:logbook @entity)))]
+    (:timestamps logbook)
+    []))
+
+(def unique? #(some? %))
+
+(def last-3-days? #(last-days? % 3))
+
+(def last-3-months? #(last-months? % 3))
 
 (defn my-fixture [f]
   (reset! user clean-slate)
@@ -14,18 +30,23 @@
                         :end-of-trial unique?
                         :follow-up unique?
                         :categories-change today?
-                        :newsletter last-3-days?})
-  (set-config! :persistence-fn (fn [entity event] (swap! user (fn [entity] (let [logbook (conj (:logbook entity) {event (t/now)})]
-                                                                           (assoc entity :logbook logbook))))))
+                        :newsletter last-3-days?
+                        :always (constantly false)
+                        :never (constantly true)})
+  (set-config! :persistence-fn persistence-fn)
+  (set-config! :logbook-fn logbook-fn)
   (set-config! :success-fn (constantly true))
   (f))
 
 (use-fixtures :each my-fixture)
 
 (deftest configuration
+  (testing "Doesn't throw error when everything is set"
+      (is (future? (with-logbook user :follow-up
+                     (do)))))
   (testing "Sanity check"
     (is (= (:name @user) "Benjamin Peirce"))
-    (is (empty? (:logbook @user)))
+    (is (seq (:logbook @user)))
     (config/reset!)
     (testing "Throws error when `events' is not set"
       (is (thrown-with-msg? java.lang.Exception #"Please set event and predicate map"
@@ -36,56 +57,62 @@
                           :follow-up unique?
                           :categories-change today?
                           :newsletter last-3-days?})
-    (testing "Throws error when `persistence-fn' is not set"
-      (is (thrown-with-msg? java.util.concurrent.ExecutionException #"Please run 'set-config! :persistence-fn!` with a function of two arguments"
-                            @(with-logbook @user :follow-up
-                               (do)))))
-    (testing "Doesn't throw error when everything is set"
-      (set-config! :persistence-fn (constantly true))
-      (is (future? (with-logbook @user :follow-up
-                     (do)))))))
+    (testing "Throws error when `logbook-fn' is not set"
+      (is (thrown-with-msg? java.lang.Exception #"Please run 'set-config! :logbook-fn!` with a function of two arguments, entity and event"
+                            @(with-logbook user :follow-up
+                               (do)))))))
 
 (deftest persistence
   (testing "Persistence doesn't occur when success is denied"
     (set-config! :success-fn (constantly false))
-    @(with-logbook @user :account-blocked
+    @(with-logbook user :account-blocked
        (do))
     (is (empty? (:logbook @user))))
   (testing "Persistence occurs when success is confirmed"
     (reset! user clean-slate)
     (set-config! :success-fn (constantly true))
-    @(with-logbook @user :account-blocked
+    @(with-logbook user :account-blocked
        (do))
     (is (contains? @user :logbook))
-    (is (boolean (some :account-blocked (:logbook @user))))))
+    (is (boolean (some #(= (:event %) :account-blocked) (:logbook @user))))))
 
 (deftest predicates
   (testing "Predicates determine if operation is done, and if logbook gets written."
     (testing "`Unique` predicate means operation can be executed once only."
-      (is (= "I have done something" @(with-logbook @user :end-of-trial
+      (is (= "I have done something" @(with-logbook user :end-of-trial
                                         (identity "I have done something"))))
-      (is (= nil (with-logbook @user :end-of-trial
+      (is (= nil (with-logbook user :end-of-trial
                    (identity "I have done something"))))
-      (is (= 1 (count (filter :end-of-trial (:logbook @user))))))
+      (is (= 1 (count (:timestamps (first (filter #(= (:event %) :end-of-trial) (:logbook @user))))))))
     (testing "`Today` predicate means operation can be executed only if no other operation has been executed during the present day."
-      (is (= "I have done something" @(with-logbook @user :categories-change
+      (is (= "I have done something" @(with-logbook user :categories-change
                                         (identity "I have done something"))))
-      (is (= nil (with-logbook @user :categories-change
+      (is (= nil (with-logbook user :categories-change
                    (identity "I have done something"))))
-      (is (= 1 (count (filter :categories-change (:logbook @user))))))))
+      (is (= 1 (count (:timestamps (first (filter #(= (:event %) :categories-change) (:logbook @user)))))))
+      (is (= nil (with-logbook user :categories-change
+                   (identity "I have done something"))))
+      (is (= 1 (count (:timestamps (first (filter #(= (:event %) :categories-change) (:logbook @user)))))))
+      (is (= "I have done something" @(with-logbook user :always
+                                        (identity "I have done something"))))
+      (is (= "I have done something" @(with-logbook user :always
+                                        (identity "I have done something"))))
+      (is (= "I have done something" @(with-logbook user :always
+                                        (identity "I have done something"))))
+      (is (= 3 (count (:timestamps (first (filter #(= (:event %) :always) (:logbook @user))))))))))
 
 (deftest events
   (testing "If the event is unknown, we don't execute the operation and don't write to the logbook (default)."
-    (testing "deault setting"
+    (testing "default setting"
       (set-config! :allow-undeclared-events? false)
-      (is (= nil (with-logbook @user :subscribed
+      (is (= nil (with-logbook user :subscribed
                    (identity "I have done something"))))
-      (is (= nil (with-logbook @user :got-pwned
+      (is (= nil (with-logbook user :got-pwned
                    (identity "I have done something")))))
     (testing "If the event is unknown, but we changed the default, we execute the operation and write to the logbook"
       (set-config! :allow-undeclared-events? true)
-      (is (= "I have done something" @(with-logbook @user :got-pwned
+      (is (= "I have done something" @(with-logbook user :got-pwned
                                         (identity "I have done something"))))
-      (is (= "I have done something else" @(with-logbook @user :got-pwned
+      (is (= "I have done something else" @(with-logbook user :got-pwned
                                              (identity "I have done something else"))))
-      (is (= 2 (count (filter :got-pwned (:logbook @user))))))))
+      (is (= 2 (count (:timestamps (first (filter #(= (:event %) :got-pwned) (:logbook @user))))))))))

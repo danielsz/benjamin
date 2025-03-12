@@ -2,10 +2,11 @@
   (:refer-clojure :exclude [reset!]))
 
 (def defaults {:persistence-fn (fn [_ _]
-                                 (throw (Exception.  "Please run 'set-config! :persistence-fn!` with a function of two arguments (entity and event)")))
+                                 (throw (Exception.  "Please run 'set-config! :persistence-fn!` with a function of two arguments, entity and event")))
                :success-fn (constantly true)
                :events #(throw (Exception. "Please set event and predicate map"))
-               :logbook-fn :logbook
+               :logbook-fn (fn [_ _]
+                                 (throw (Exception.  "Please run 'set-config! :logbook-fn!` with a function of two arguments, entity and event")))
                :allow-undeclared-events? false})
 
 (def ^:dynamic config defaults)

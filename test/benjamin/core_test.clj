@@ -9,12 +9,12 @@
 (def user (atom clean-slate))
 
 (defn persistence-fn [entity event]
-  (if-let [entry-index (first (keep-indexed (fn [idx entry] (when (= (:event entry) event) idx)) (:logbook @entity)))]                       
-    (swap! entity update-in [:logbook entry-index :timestamps] conj (Instant/now))
-    (swap! entity update :logbook (fnil #(conj % {:event event :timestamps [(Instant/now)]}) []))))
+  (if-let [entry-index (first (keep-indexed (fn [idx entry] (when (= (:event entry) event) idx)) (:logbooks @entity)))]                       
+    (swap! entity update-in [:logbooks entry-index :timestamps] conj (Instant/now))
+    (swap! entity update :logbooks (fnil #(conj % {:event event :timestamps [(Instant/now)]}) []))))
 
 (defn logbook-fn [entity event]
-  (if-let [logbook (first (filter #(= event (:event %)) (:logbook @entity)))]
+  (if-let [logbook (first (filter #(= event (:event %)) (:logbooks @entity)))]
     (:timestamps logbook)
     []))
 
@@ -46,7 +46,7 @@
                      (do)))))
   (testing "Sanity check"
     (is (= (:name @user) "Benjamin Peirce"))
-    (is (seq (:logbook @user)))
+    (is (seq (:logbooks @user)))
     (config/reset!)
     (testing "Throws error when `events' is not set"
       (is (thrown-with-msg? java.lang.Exception #"Please set event and predicate map"
@@ -67,14 +67,14 @@
     (set-config! :success-fn (constantly false))
     @(with-logbook user :account-blocked
        (do))
-    (is (empty? (:logbook @user))))
+    (is (empty? (:logbooks @user))))
   (testing "Persistence occurs when success is confirmed"
     (reset! user clean-slate)
     (set-config! :success-fn (constantly true))
     @(with-logbook user :account-blocked
        (do))
-    (is (contains? @user :logbook))
-    (is (boolean (some #(= (:event %) :account-blocked) (:logbook @user))))))
+    (is (contains? @user :logbooks))
+    (is (boolean (some #(= (:event %) :account-blocked) (:logbooks @user))))))
 
 (deftest predicates
   (testing "Predicates determine if operation is done, and if logbook gets written."
@@ -83,23 +83,23 @@
                                         (identity "I have done something"))))
       (is (= nil (with-logbook user :end-of-trial
                    (identity "I have done something"))))
-      (is (= 1 (count (:timestamps (first (filter #(= (:event %) :end-of-trial) (:logbook @user))))))))
+      (is (= 1 (count (:timestamps (first (filter #(= (:event %) :end-of-trial) (:logbooks @user))))))))
     (testing "`Today` predicate means operation can be executed only if no other operation has been executed during the present day."
       (is (= "I have done something" @(with-logbook user :categories-change
                                         (identity "I have done something"))))
       (is (= nil (with-logbook user :categories-change
                    (identity "I have done something"))))
-      (is (= 1 (count (:timestamps (first (filter #(= (:event %) :categories-change) (:logbook @user)))))))
+      (is (= 1 (count (:timestamps (first (filter #(= (:event %) :categories-change) (:logbooks @user)))))))
       (is (= nil (with-logbook user :categories-change
                    (identity "I have done something"))))
-      (is (= 1 (count (:timestamps (first (filter #(= (:event %) :categories-change) (:logbook @user)))))))
+      (is (= 1 (count (:timestamps (first (filter #(= (:event %) :categories-change) (:logbooks @user)))))))
       (is (= "I have done something" @(with-logbook user :always
                                         (identity "I have done something"))))
       (is (= "I have done something" @(with-logbook user :always
                                         (identity "I have done something"))))
       (is (= "I have done something" @(with-logbook user :always
                                         (identity "I have done something"))))
-      (is (= 3 (count (:timestamps (first (filter #(= (:event %) :always) (:logbook @user))))))))))
+      (is (= 3 (count (:timestamps (first (filter #(= (:event %) :always) (:logbooks @user))))))))))
 
 (deftest events
   (testing "If the event is unknown, we don't execute the operation and don't write to the logbook (default)."
@@ -115,4 +115,4 @@
                                         (identity "I have done something"))))
       (is (= "I have done something else" @(with-logbook user :got-pwned
                                              (identity "I have done something else"))))
-      (is (= 2 (count (:timestamps (first (filter #(= (:event %) :got-pwned) (:logbook @user))))))))))
+      (is (= 2 (count (:timestamps (first (filter #(= (:event %) :got-pwned) (:logbooks @user))))))))))
